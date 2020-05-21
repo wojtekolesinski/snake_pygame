@@ -27,20 +27,27 @@ class Grid:
             y += WIDTH
 
 class Snake:
-    def __init__(self, x, y, dirx, diry, width, height, body_length):
+    def __init__(self, x, y, dirx, diry, width, height):
         self.x = x
         self.y = y
         self.dirx = dirx
         self.diry = diry
         self.width = width
         self.height = height
-        self.body_length = body_length
+        self.body_length = 0
+        self.tail = []
         self.foodpos = self.food()
+
 
     def draw(self):
         pygame.draw.rect(SCREEN, (0, 255, 0), (self.x, self.y, self.width, self.height))
+        for el in self.tail:
+            pygame.draw.rect(SCREEN, (0, 255, 0), (el[0], el[1], self.width, self.height))
         pygame.draw.rect(SCREEN, (255, 0, 0), (self.foodpos[0], self.foodpos[1], self.width, self.height))
         self.eat()
+        if [self.x, self.y] in self.tail[:-1]:
+            self.tail = []
+        self.tail_update()
 
     def food(self):
         x = random.randrange(0, 500, WIDTH)
@@ -50,9 +57,22 @@ class Snake:
     def eat(self):
         if self.x == self.foodpos[0] and self.y == self.foodpos[1]:
             self.foodpos = self.food()
+            self.tail += [[self.x, self.y]]
+
+    def tail_update(self):
+        # new_tail = []
+        # for i in range(len(self.tail)):
+        #     new_tail.append(self.tail[-1])
+        # new_tail += [[self.x, self.y]]
+        if len(self.tail) != 0:
+            self.tail.remove(self.tail[0])
+            self.tail += [[self.x, self.y]]
+
+
+
 
 run = True
-snake = Snake(X, Y, 0, -1, WIDTH, HEIGHT, 1)
+snake = Snake(X, Y, 0, -1, WIDTH, HEIGHT)
 
 
 while run:
@@ -95,7 +115,7 @@ while run:
     snake.y += snake.diry * snake.width
 
     SCREEN.fill((0,0,0))
-    Grid.draw(SCREEN)
+    # Grid.draw(SCREEN)
     snake.draw()
     pygame.display.update()
 
